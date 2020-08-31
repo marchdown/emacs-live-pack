@@ -79,25 +79,25 @@
 ;; ;; The preceding code treats desktops configurations as artifacts to be explicitly saved and accessed by name
 ;; ;; it presumes (desktop-save-mode 0)
 ;; ;;
-;; ;;;; sylvain suggest
-;; ;; the following code
-;; ;; which
-;; ;; prevents emacs stumbling after a system crash because of a PID lock
-;; ;; it presumes (desktop-save-mode 1)
+;;;; sylvain suggest
+;; the following code
+;; which
+;; prevents emacs stumbling after a system crash because of a PID lock
+;; it presumes (desktop-save-mode 1)
 
-;;   (defun marchdown/desktop-owner-advice (original &rest args)
-;;     (let ((owner (apply original args)))
-;;       (if (and owner (/= owner (emacs-pid)))
-;;           (and (car (member owner (list-system-processes)))
-;;                (let (cmd (attrlist (process-attributes owner)))
-;;                  (if (not attrlist) owner
-;;                    (dolist (attr attrlist)
-;;                      (and (string= "comm" (car attr))
-;;                           (setq cmd (car attr))))
-;;                    (and cmd (string-match-p "[Ee]macs" cmd) owner))))
-;;         owner)))
+  (defun marchdown/desktop-owner-advice (original &rest args)
+    (let ((owner (apply original args)))
+      (if (and owner (/= owner (emacs-pid)))
+          (and (car (member owner (list-system-processes)))
+               (let (cmd (attrlist (process-attributes owner)))
+                 (if (not attrlist) owner
+                   (dolist (attr attrlist)
+                     (and (string= "comm" (car attr))
+                          (setq cmd (car attr))))
+                   (and cmd (string-match-p "[Ee]macs" cmd) owner))))
+        owner)))
 
-;;   (advice-add #'desktop-owner :around #'marchdown/desktop-owner-advice)
+  (advice-add #'desktop-owner :around #'marchdown/desktop-owner-advice)
 
 
 (setq history-length 40000)
